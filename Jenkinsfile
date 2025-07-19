@@ -20,7 +20,7 @@ pipeline{
                     app:
                         build: .
                         image: ${imageName}
-                    """
+                    """.stripIndent()
                     sh 'docker compose build'
                     echo "Docker image ${imageName} built."
                 }
