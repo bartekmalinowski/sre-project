@@ -11,22 +11,26 @@ pipeline{
         }
         //Building docker image
         stage('Build docker image'){
-            script{
-                def imageName = "sre-project-app:latest"
-                docker.build(imageName)
-                echo "Docker image ${imageName} built."
+            steps{
+                script{
+                    def imageName = "sre-project-app:latest"
+                    docker.build(imageName, '.')
+                    echo "Docker image ${imageName} built."
+                }
             }
-        }
+    }
 
         //Start tests
         stage('Tests'){
-            echo 'Running tests..'
-            sh 'echo Test passed!'
+            steps{
+                echo 'Running tests..'
+                sh 'echo Test passed!'
+            }
         }
-    }
-}   
+    }   
     post {
         always{
             echo 'Pipeline finished.'
         }
     }
+}
