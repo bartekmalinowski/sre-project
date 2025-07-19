@@ -1,17 +1,15 @@
-pipeline{
+pipeline {
     agent any
 
-    stages{
-        //Downloading code
-        stage('Checkout'){
-            steps{
+    stages {
+        stage('Checkout') {
+            steps {
                 git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/bartekmalinowski/sre-project.git'
-                echo "Code checked out successfully."
             }
         }
-        //Building docker image
-        stage('Build docker image'){
-            steps{
+
+        stage('Build Docker Image') {
+            steps {
                 withDockerServer(uri: 'tcp://host.docker.internal:2375') {
                     script {
                         def imageName = "sre-project-app:v${BUILD_NUMBER}"
@@ -20,19 +18,18 @@ pipeline{
                     }
                 }
             }
+        }
 
-        //Start tests
-        stage('Tests'){
-            steps{
-                echo 'Running tests..'
-                sh 'echo Test passed!'
+        stage('Test') {
+            steps {
+                echo 'Running tests... (placeholder)'
             }
         }
-    }   
+    }
+    
     post {
-        always{
+        always {
             echo 'Pipeline finished.'
         }
     }
-}
 }
