@@ -24,10 +24,9 @@ pipeline{
             sh 'echo Test passed!'
         }
     }
-    
+}   
     post {
         always{
             echo 'Pipeline finished.'
         }
     }
-}
