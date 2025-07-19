@@ -13,15 +13,8 @@ pipeline{
         stage('Build docker image'){
             steps{
                 script{
-                    def imageName = "sre-project-app:latest"
-                    writeFile file: 'docker-compose.yml', text: """
-                    version: '3.8'
-                    services:
-                    app:
-                    build: .
-                    image: ${imageName}
-                    """
-                    sh 'docker compose build'
+                    def imageName = "sre-project-app:v${BUILD_NUMBER}"
+                    docker.build(imageName, '.')
                     echo "Docker image ${imageName} built."
                 }
             }
@@ -37,7 +30,6 @@ pipeline{
     }   
     post {
         always{
-            deleteDir()
             echo 'Pipeline finished.'
         }
     }
