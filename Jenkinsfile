@@ -5,6 +5,8 @@ pipeline {
         DOCKER_HOST = 'tcp://host.docker.internal:2375'
         EC2_ADDRESS = '16.171.198.37'
         CONTAINER_NAME = 'sre-app'
+        DOCKERHUB_USER = 'bartekmalinowski'
+        REPO_NAME = 'sre-project-app'
     }
 
     stages {
@@ -17,9 +19,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                     script {
-                        env.IMAGE_NAME = "sre-project-app:v${BUILD_NUMBER}"
+
+                        env.IMAGE_NAME = "${DOCKERHUB_USER}/${REPO_NAME}:v${BUILD_NUMBER}"
                         sh "docker build -t ${env.IMAGE_NAME} ."
                         echo "Successfully built Docker image: ${env.IMAGE_NAME}"
+
+                        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                    }
+
+                    sh "docker push ${env.IMAGE_NAME}"
                 }
             }
         }
@@ -43,6 +52,7 @@ pipeline {
     }
     post {
         always {
+            sh "docker logout"
             echo 'Pipeline finished.'
         }
     }
