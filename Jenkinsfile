@@ -24,14 +24,14 @@ pipeline {
             }
         }
 
-        Stage('Deploy to EC2'){
+        stage('Deploy to EC2'){
             steps{
                 sshagent(credentials: ['ec2-ssh-key']){
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_ADDRESS} << 'ENDSSH'
                             echo 'Connected to EC2'
-                            docker stop {CONTAINER_NAME} || true
-                            docker rm {CONTAINER_NAME} || true
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
                             docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${env.IMAGE_NAME}
 
                             echo 'Deployment finished.'
@@ -40,7 +40,7 @@ pipeline {
                 }
             }
         }
-    
+    }
     post {
         always {
             echo 'Pipeline finished.'
