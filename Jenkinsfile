@@ -18,9 +18,9 @@ pipeline{
                     version: '3.8'
                     services:
                     app:
-                        build: .
-                        image: ${imageName}
-                    """.stripIndent()
+                    build: .
+                    image: ${imageName}
+                    """
                     sh 'docker compose build'
                     echo "Docker image ${imageName} built."
                 }
