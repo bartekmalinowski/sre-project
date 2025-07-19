@@ -11,6 +11,7 @@ pipeline{
         }
         //Building docker image
         stage('Build docker image'){
+            steps{
                 withDockerServer(uri: 'tcp://host.docker.internal:2375') {
                     script {
                         def imageName = "sre-project-app:v${BUILD_NUMBER}"
@@ -18,7 +19,7 @@ pipeline{
                         echo "Successfully built Docker image: ${imageName}"
                     }
                 }
-    }
+            }
 
         //Start tests
         stage('Tests'){
