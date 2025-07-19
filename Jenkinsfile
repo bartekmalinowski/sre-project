@@ -22,7 +22,6 @@ pipeline {
 
                         env.IMAGE_NAME = "${DOCKERHUB_USER}/${REPO_NAME}:v${BUILD_NUMBER}"
                         sh "docker build -t ${env.IMAGE_NAME} ."
-                        echo "Successfully built Docker image: ${env.IMAGE_NAME}"
 
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
