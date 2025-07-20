@@ -31,7 +31,7 @@ pipeline {
                     docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         -v \$HOME/trivy-cache:/root/.cache/ \
-                        aquasec/trivy:0.51 \
+                        aquasec/trivy:latest \
                         image --exit-code 1 --severity CRITICAL,HIGH ${env.IMAGE_NAME}
                 """
             }
