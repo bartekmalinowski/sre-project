@@ -1,13 +1,14 @@
 #1
-FROM python:3.11-slim-buster AS builder
+FROM python:3.11-slim-bookworm AS builder
 WORKDIR /app
 COPY requirements.txt .
+RUN pip install --upgrade pip setuptools
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN pytest
 
 #2
-FROM python:3.11-slim-buster
+FROM python:3.11-slim-bookworm
 WORKDIR /app
 COPY --from=builder /usr/local/ /usr/local/
 
