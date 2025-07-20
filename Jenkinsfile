@@ -16,17 +16,33 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+                stage('Test & Build') {
             steps {
-                    script {
+                script {
+                    env.IMAGE_NAME = "${DOCKERHUB_USER}/${REPO_NAME}:v${BUILD_NUMBER}"
+                    sh "docker build -t ${env.IMAGE_NAME} ."
+                }
+            }
+        }
 
-                        env.IMAGE_NAME = "${DOCKERHUB_USER}/${REPO_NAME}:v${BUILD_NUMBER}"
-                        sh "docker build -t ${env.IMAGE_NAME} ."
+        stage('Security Scan') {
+            steps {
+                sh """
+                    docker run --rm \
+                        -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v \$HOME/trivy-cache:/root/.cache/ \
+                        aquasec/trivy:0.51 \
+                        image --exit-code 1 --severity CRITICAL,HIGH ${env.IMAGE_NAME}
+                """
+            }
+        }
 
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
                     }
-
                     sh "docker push ${env.IMAGE_NAME}"
                 }
             }
