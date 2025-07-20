@@ -1,26 +1,28 @@
-import sys
-import os
-from app import app
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from tasks import app
 
 
-def test_home_page():
+def test_get_tasks():
     client = app.test_client()
-    response = client.get("/")
+    response = client.get("/tasks")
     assert response.status_code == 200
-    assert b"Hello, World! Welcome to the SRE Project App." in response.data
+    data = response.get_json()
+    assert isinstance(data, list)
+    if data:
+        assert "id" in data[0]
+        assert "title" in data[0]
 
 
-def test_status_page():
+def test_add_task_success():
     client = app.test_client()
-    response = client.get("/status")
-    assert response.status_code == 200
-    json_data = response.get_json()
-    assert json_data["status"] == "OK"
+    new_task_data = {"title": "Deploy to production"}
+    response = client.post("/tasks", json=new_task_data)
+    assert response.status_code == 201
+    data = response.get_json()
+    assert data["title"] == new_task_data["title"]
+    assert data["completed"] is False
 
 
-def test_error_page():
+def test_add_task_failure():
     client = app.test_client()
-    response = client.get("/error")
-    assert response.status_code == 500
+    response = client.post("/tasks", json={})
+    assert response.status_code == 400
