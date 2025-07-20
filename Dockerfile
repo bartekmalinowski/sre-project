@@ -1,5 +1,6 @@
 #1
 FROM python:3.11-slim-bookworm AS builder
+RUN apt-get update && apt-get upgrade -y
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --upgrade pip setuptools
